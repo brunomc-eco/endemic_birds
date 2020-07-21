@@ -8,13 +8,14 @@ library(taxize)
 library(data.table)
 
 # reading our species list (107 spp.)
-splist <- read.delim("./data/splist.txt", header = FALSE)
-splist <- as.character(splist$V1)
+splist <- read_csv("./data/splist.csv", col_names = FALSE)
+splist <- as.character(splist$X1)
+
 
 # reading species data from Hasui
-s1_qual <- read.csv("./data/DataS1_Hasui/ATLANTIC_BIRDS_qualitative.csv")
-s1_quan <- read.csv("./data/DataS1_Hasui/ATLANTIC_BIRDS_quantitative.csv")
-s1_species <- read.csv("./data/DataS1_Hasui/ATLANTIC_birds_species.csv")
+s1_qual <- read_csv("./data/DataS1_Hasui/ATLANTIC_BIRDS_qualitative.csv")
+s1_quan <- read_csv("./data/DataS1_Hasui/ATLANTIC_BIRDS_quantitative.csv")
+s1_species <- read_csv("./data/DataS1_Hasui/ATLANTIC_birds_species.csv")
 
 # binding data, keeping only records of species from our list
 Hasui_df <- bind_rows(s1_qual, s1_quan) %>%
@@ -49,7 +50,6 @@ occ_download(
 
 gbif_df <- fread("./data/data_gbif/0025885-200613084148143.csv", na.strings = c("", NA))
 
-
 # table with search results
 
 count_Hasui <- Hasui_df %>%
@@ -60,13 +60,13 @@ count_gbif <- gbif_df %>%
 
 searches <- tibble(species = splist, date_of_search = rep(Sys.Date(), length(splist))) %>%
   left_join(count_Hasui, by = c("species" = "Species")) %>%
-  rename(records_in_Hasui = n) %>%
+  rename(Hasui_filtered = n) %>%
   left_join(count_gbif, by = "species") %>%
-  rename(records_in_gbif = n) %>%
-  replace_na(list(records_in_Hasui = 0, records_in_gbif = 0))
+  rename(gbif_filtered = n) %>%
+  replace_na(list(Hasui_filtered = 0, gbif_filtered = 0))
 
 
 # saving outputs
-write.csv(searches, "./outputs/01_search_results.csv", row.names = FALSE)
-write.csv(Hasui_df, "./outputs/01_unclean_records_Hasui.csv", row.names = FALSE)
-write.csv(gbif_df, "./outputs/01_unclean_records_gbif.csv", row.names = FALSE)
+write_csv(searches, "./outputs/01_search_results.csv")
+write_csv(Hasui_df, "./outputs/01_unclean_records_Hasui.csv")
+write_csv(gbif_df, "./outputs/01_unclean_records_gbif.csv")
