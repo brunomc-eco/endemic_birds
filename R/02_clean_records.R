@@ -10,6 +10,8 @@ Hasui_df <- read_csv("./outputs/01_unclean_records_Hasui.csv")
 gbif_df <- read_csv("./outputs/01_unclean_records_gbif.csv")
 splist <- read_csv("./data/splist.csv", col_names = FALSE)
 splist <- as.character(splist$X1)
+only_keys <- read_csv("./outputs/01_gbif_taxonkeys.csv")
+only_keys <- as.character(only_keys$taxonKey)
 
 # removing records with NA coordinates, keeping only species from our list
 Hasui_occs <- Hasui_df %>%
@@ -18,8 +20,7 @@ Hasui_occs <- Hasui_df %>%
 
 gbif_occs <- gbif_df %>%
   filter(!is.na(decimalLongitude) & !is.na(decimalLatitude)) %>%
-  filter(species %in% splist)
-
+  filter(taxonKey %in% only_keys)
 
 # Viewing unclean records
 world <- borders("world", colour="gray50", fill="gray50")
@@ -45,7 +46,7 @@ flags_gbif <- clean_coordinates(x = gbif_occs,
                                 lon = "decimalLongitude",
                                 lat = "decimalLatitude",
                                 countries = "countryCode",
-                                species = "species",
+                                species = "scientificName",
                                 tests = c("capitals", # flags records at adm-0 capitals
                                           "centroids", # flags records at country centroids
                                           "equal", # flags records with equal lon and lat
@@ -94,6 +95,21 @@ clean_df <- bind_rows(Hasui_clean, gbif_clean)
 # removing duplicates
 clean_df <- clean_df %>%
   distinct()
+
+# which species have records in the western part of South America? (lon < -65)
+
+western_species <- clean_df %>%
+  mutate(western = lon <= -65) %>%
+  filter(western == TRUE) %>%
+  #group_by(species, western) %>%
+  #summarize(n_records = n()) %>%
+  pull(species) %>%
+  unique() %>%
+  tibble() %>%
+  rename("westernmost_species" = ".") %>%
+  arrange(westernmost_species)
+
+write_csv(western_species, path = "./outputs/02_westernmost_species_gbif.csv")
 
 
 # plotting clean records

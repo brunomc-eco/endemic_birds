@@ -65,8 +65,10 @@ searches <- tibble(species = splist, date_of_search = rep(Sys.Date(), length(spl
   rename(gbif_filtered = n) %>%
   replace_na(list(Hasui_filtered = 0, gbif_filtered = 0))
 
+only_keys <- tibble(taxonKey = only_keys)
 
 # saving outputs
 write_csv(searches, "./outputs/01_search_results.csv")
 write_csv(Hasui_df, "./outputs/01_unclean_records_Hasui.csv")
 write_csv(gbif_df, "./outputs/01_unclean_records_gbif.csv")
+write_csv(only_keys, "./outputs/01_gbif_taxonkeys.csv")
