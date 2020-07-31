@@ -26,19 +26,19 @@ gbif_occs <- gbif_df %>%
 world <- borders("world", colour="gray50", fill="gray50")
 sa <- borders("world", colour="gray50", fill="gray50", xlim = c(-109, -28), ylim = c(-55, 15))
 
-ggplot()+ coord_fixed()+ world +
-  geom_point(data = gbif_occs, aes(x = decimalLongitude, y = decimalLatitude),
-             colour = "yellow", size = 0.5)+
-  geom_point(data = Hasui_occs, aes(x = Longitude_x, y = Latitude_y),
-             colour = "darkred", size = 0.5)+
-  theme_bw()
+#ggplot()+ coord_fixed()+ world +
+#  geom_point(data = gbif_occs, aes(x = decimalLongitude, y = decimalLatitude),
+#             colour = "yellow", size = 0.5)+
+#  geom_point(data = Hasui_occs, aes(x = Longitude_x, y = Latitude_y),
+#             colour = "darkred", size = 0.5)+
+#  theme_bw()
 
-ggplot()+ coord_fixed()+ sa +
-  geom_point(data = gbif_occs, aes(x = decimalLongitude, y = decimalLatitude),
-             colour = "yellow", size = 0.5)+
-  geom_point(data = Hasui_occs, aes(x = Longitude_x, y = Latitude_y),
-             colour = "darkred", size = 0.5)+
-  theme_bw()
+#ggplot()+ coord_fixed()+ sa +
+#  geom_point(data = gbif_occs, aes(x = decimalLongitude, y = decimalLatitude),
+#             colour = "yellow", size = 0.5)+
+#  geom_point(data = Hasui_occs, aes(x = Longitude_x, y = Latitude_y),
+#             colour = "darkred", size = 0.5)+
+#  theme_bw()
 
 
 # cleaning data with CoordinateCleaner
@@ -75,17 +75,17 @@ Hasui_clean1 <- Hasui_occs[flags_Hasui$.summary, ] %>%
 
 
 #### etc: include here other cleaning routines
-
+# filter out very old records?
 
 # Merging clean datasets
 Hasui_clean <- tibble(species = Hasui_clean1$Species,
-                      year = Hasui_clean1$Year,
+                      #year = Hasui_clean1$Year,
                       lon = Hasui_clean1$Longitude_x,
                       lat = Hasui_clean1$Latitude_y,
                       source = rep("Hasui", nrow(Hasui_clean1)))
 
 gbif_clean <- tibble(species = gbif_clean1$species,
-                      year = gbif_clean1$year,
+                      #year = gbif_clean1$year,
                       lon = gbif_clean1$decimalLongitude,
                       lat = gbif_clean1$decimalLatitude,
                       source = rep("gbif", nrow(gbif_clean1)))
@@ -111,6 +111,12 @@ western_species <- clean_df %>%
 
 write_csv(western_species, path = "./outputs/02_westernmost_species_gbif.csv")
 
+# removing these species from clean_df
+`%notin%` <- Negate(`%in%`)
+
+clean_df <- clean_df %>%
+  filter(species %notin% as.character(western_species$westernmost_species))
+
 
 # plotting clean records
 ggplot()+ coord_fixed()+ sa +
@@ -135,8 +141,3 @@ n_records <- n_records %>%
 
 write_csv(n_records, path = "./outputs/02_n_records.csv")
 write_csv(clean_df, path = "./outputs/02_clean_df.csv")
-
-#### TO DO LIST ####
-
-# filter records by time frame (years?)
-# filter records outside Atlantic Forest + buffer??
