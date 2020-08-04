@@ -4,6 +4,7 @@
 
 library(tidyverse)
 library(CoordinateCleaner)
+library(countrycode)
 
 # reading data
 Hasui_df <- read_csv("./outputs/01_unclean_records_Hasui.csv")
@@ -23,29 +24,25 @@ gbif_occs <- gbif_df %>%
   filter(taxonKey %in% only_keys)
 
 # Viewing unclean records
-world <- borders("world", colour="gray50", fill="gray50")
-sa <- borders("world", colour="gray50", fill="gray50", xlim = c(-109, -28), ylim = c(-55, 15))
-
-#ggplot()+ coord_fixed()+ world +
+#ggplot()+ coord_fixed()+
+#  borders("world", colour="gray50", fill="gray50") +
 #  geom_point(data = gbif_occs, aes(x = decimalLongitude, y = decimalLatitude),
 #             colour = "yellow", size = 0.5)+
 #  geom_point(data = Hasui_occs, aes(x = Longitude_x, y = Latitude_y),
 #             colour = "darkred", size = 0.5)+
 #  theme_bw()
 
-#ggplot()+ coord_fixed()+ sa +
-#  geom_point(data = gbif_occs, aes(x = decimalLongitude, y = decimalLatitude),
-#             colour = "yellow", size = 0.5)+
-#  geom_point(data = Hasui_occs, aes(x = Longitude_x, y = Latitude_y),
-#             colour = "darkred", size = 0.5)+
-#  theme_bw()
 
+# standardizing country names
+gbif_occs$countryCode <- countrycode(gbif_occs$countryCode, origin = 'iso2c', destination = 'iso3c')
+Hasui_occs$Country <- countrycode(Hasui_occs$Country, origin = 'country.name', destination = 'iso3c')
 
 # cleaning data with CoordinateCleaner
 flags_gbif <- clean_coordinates(x = gbif_occs,
                                 lon = "decimalLongitude",
                                 lat = "decimalLatitude",
                                 countries = "countryCode",
+                                centroids_rad = 2000, # had to increase this limit because was not flagging the centroid of Brazil
                                 species = "scientificName",
                                 tests = c("capitals", # flags records at adm-0 capitals
                                           "centroids", # flags records at country centroids
@@ -109,7 +106,6 @@ western_species <- clean_df %>%
   rename("westernmost_species" = ".") %>%
   arrange(westernmost_species)
 
-write_csv(western_species, path = "./outputs/02_westernmost_species_gbif.csv")
 
 # removing these species from clean_df
 `%notin%` <- Negate(`%in%`)
@@ -119,10 +115,13 @@ clean_df <- clean_df %>%
 
 
 # plotting clean records
-ggplot()+ coord_fixed()+ sa +
+ggplot() +
+  borders("world", colour="gray50", fill="gray50") +
   geom_point(data = clean_df, aes(x = lon, y = lat),
-             colour = "blue", size = 0.5)+
+             colour = "blue", size = 0.5) +
+  coord_sf(xlim = c(-109, -28), ylim = c(-55, 15)) +
   theme_bw()
+
 
 # write n_records table
 n_records <- read_csv("./outputs/01_search_results.csv")
@@ -139,5 +138,9 @@ n_records <- n_records %>%
   rename(merged_clean1 = n) %>%
   replace_na(list(Hasui_clean1 = 0, gbif_clean1 = 0, merged_clean1 = 0))
 
+
+# writing outputs
+
 write_csv(n_records, path = "./outputs/02_n_records.csv")
 write_csv(clean_df, path = "./outputs/02_clean_df.csv")
+write_csv(western_species, path = "./outputs/02_westernmost_species_gbif.csv")

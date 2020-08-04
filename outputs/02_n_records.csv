@@ -1,7 +1,7 @@
 species,date_of_search,Hasui_filtered,gbif_filtered,Hasui_clean1,gbif_clean1,merged_clean1
-Amazona brasiliensis,2020-07-21,56,719,35,518,126
+Amazona brasiliensis,2020-07-21,56,719,35,517,125
 Amazona rhodocorytha,2020-07-21,60,1143,57,1049,275
-Amazona vinacea,2020-07-21,80,1513,78,1333,0
+Amazona vinacea,2020-07-21,80,1513,78,1331,0
 Anabacerthia amaurotis,2020-07-21,227,1488,225,1435,514
 Anabacerthia lichtensteini,2020-07-21,199,4307,192,4246,1106
 Anabazenops fuscus,2020-07-21,245,3829,241,3689,987
@@ -30,7 +30,7 @@ Drymophila rubricollis,2020-07-21,122,2604,120,2511,726
 Dysithamnus plumbeus,2020-07-21,55,385,55,299,0
 Dysithamnus xanthopterus,2020-07-21,79,1157,79,1098,373
 Eleoscytalopus psychopompus,2020-07-21,3,80,3,78,29
-Glaucidium minutissimum,2020-07-21,62,1706,61,1524,0
+Glaucidium minutissimum,2020-07-21,62,1706,61,1514,0
 Glaucidium mooreorum,2020-07-21,2,0,2,0,1
 Glaucis dohrnii,2020-07-21,29,401,29,389,93
 Haplospiza unicolor,2020-07-21,383,2694,377,2413,981
@@ -41,7 +41,7 @@ Hemitriccus orbitatus,2020-07-21,414,2630,394,2536,938
 Hylatomus galeatus,2020-07-21,0,0,0,0,0
 Hypoedaleus guttatus,2020-07-21,206,0,202,0,164
 Ilicura militaris,2020-07-21,346,5820,338,5616,1542
-Jacamaralcyon tridactyla,2020-07-21,18,550,18,469,163
+Jacamaralcyon tridactyla,2020-07-21,18,550,18,467,162
 Laniisoma elegans,2020-07-21,102,321,94,260,0
 Leptodon forbesi,2020-07-21,0,236,0,226,73
 Lipaugus ater,2020-07-21,22,0,22,0,21
@@ -83,7 +83,7 @@ Pogonotriccus eximius,2020-07-21,0,0,0,0,0
 Procnias nudicollis,2020-07-21,394,7537,373,7021,0
 Pseudastur polionotus,2020-07-21,76,1036,71,1010,404
 Pteroglossus bailloni,2020-07-21,147,2477,145,2411,662
-Pyriglena atra,2020-07-21,21,175,17,68,54
+Pyriglena atra,2020-07-21,21,175,17,66,53
 Pyrrhura cruentata,2020-07-21,29,935,28,814,182
 Pyrrhura griseipectus,2020-07-21,0,376,0,371,108
 Ramphodon naevius,2020-07-21,169,5944,160,5599,1132
