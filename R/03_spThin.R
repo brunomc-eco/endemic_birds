@@ -88,6 +88,6 @@ n_records <- n_records %>%
 
 
 # writing outputs
-write_csv(n_records, path = "./outputs/spThin_tests/n_thinned_records.csv")
-write_csv(clean_df_thin_5, path = "./outputs/spThin_tests/clean_df_thin_5.csv")
-write_csv(clean_df_thin_10, path = "./outputs/spThin_tests/clean_df_thin_10.csv")
+write_csv(n_records, path = "./outputs/03_n_thinned_records.csv")
+write_csv(clean_df_thin_5, path = "./outputs/03_clean_df_thin_5.csv")
+write_csv(clean_df_thin_10, path = "./outputs/03_clean_df_thin_10.csv")

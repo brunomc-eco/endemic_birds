@@ -3,6 +3,10 @@
 .RData
 .Ruserdata
 
+*.asc
+
 data/data_gbif
 
 outputs/*unclean*
+
+outputs/models
