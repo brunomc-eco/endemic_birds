@@ -1,8 +1,16 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Habitat amount is more important than climate change for landscape-scale bird conservation in a biodiversity hotspot
 
 ENM of Atlantic Rainforest endemic birds
 
 ## Species list
+
+A total of 14,965 records of 71 species. 
+This table of records is from the `"./outputs/03_clean_df_thin_10.csv"` file. 
 
 |   |spp                            | rec|
 |:-:|:------------------------------|---:|
@@ -78,41 +86,28 @@ ENM of Atlantic Rainforest endemic birds
 |70 |Touit surdus                   |  89|
 |71 |Xipholena atropurpurea         |  58|
 
-A total of 14,965 records of 71 species. 
-This table of records is from the `"./outputs/03_clean_df_thin_10.csv"` file. 
 
 ## Modeling parameters 
 
 ### Variables (worldclim)
 
+#### from the new selection (with cutoff = 0.6)
 - BIO2 = Mean Diurnal Range (Mean of monthly (max temp - min temp))
-- BIO3 = Isothermality (BIO2/BIO7) (×100)
 - BIO7 = Temperature Annual Range (BIO5-BIO6)
-- BIO8 = Mean Temperature of Wettest Quarter
+- BIO10 = Mean Temperature of Warmest Quarter
 - BIO16 = Precipitation of Wettest Quarter
+- BIO18 = Precipitation of Warmest Quarter
 - BIO19 = Precipitation of Coldest Quarter
 
 ### Future year
 
 - 2050
 
-### GCMs
-old:
-- BCC-CSM1-1 ✅
-- HadGEM2-ES ✅
-- IPSL-CM5A-LR ✅
-- MIROC5 ✅
-- NorESM1-M ✅
+### GCMs (from worldclim)
 
-new:
-- ACCESS1-0, ✅
-- CanCM4, 
-- CanESM1, (CESM1-CAM5-1-FV2)
-- CMCC-CM, 
-- HadGEM2-CC, ✅
-- HadGEM2-ES, ✅
-- MIROC4h, 
-- MPI-ESM-LR ✅
+- ACCESS1-0
+- HadGEM2-ES
+- MPI-ESM-LR
 
 ### Representative Concentration Pathway
 
