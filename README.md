@@ -119,7 +119,7 @@ This table of records is from the `"./outputs/03_clean_df_thin_10.csv"` file.
 
 ### Study area
 
-- Atlantic Forest with 500km buffer
+- Atlantic Forest with 5° (≃555km) buffer
 
 ### Algorithms
 

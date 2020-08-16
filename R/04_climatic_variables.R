@@ -29,7 +29,10 @@ for(path in dirs_name){
 
 
 # crop variables ----------------------------------------------------------
-pb <- progress_bar$new(format = "(:spin) [:bar] :percent :elapsed layer: :current", total = length(files_list))
+pb <- progress_bar$new(
+  format = "(:spin) [:bar] :percent :elapsed layer: :current",
+  total = length(files_list),
+  clear = FALSE)
 for(i in 1:length(files_list)){
   pb$tick()
   files_name[i] <- gsub(x = files_name[i], pattern = ".bil$", ".tif")
