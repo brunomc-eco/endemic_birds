@@ -2,15 +2,12 @@
 .Rhistory
 .RData
 .Ruserdata
-
 *.asc
-
 data/data_gbif
-
 outputs/*unclean*
-
 outputs/models
-
+outputs/models_to_run
 env/
 env_croped/
 env_sel/
+boxplot_TSS.png
