@@ -58,7 +58,7 @@ temp <-
             setup_sdmdata(species_name = sp,
                           occurrences = species_df,
                           predictors = wc, # set of predictors for running the models
-                          models_dir = "./outputs/models", # folder to save partitions
+                          models_dir = "./outputs/models_buffertype_NULL_envdist_FALSE_10000", # folder to save partitions
                           seed = 123, # set seed for random generation of pseudoabsences
                           buffer_type = NULL, # buffer type for sampling pseudoabsences
 
@@ -91,19 +91,20 @@ temp <-
                      # run selected algorithms for each partition
                      do_many(species_name = sp,
                              predictors = wc,
-                             models_dir = "./outputs/models",
+                             models_dir = "./outputs/models_buffertype_NULL_envdist_FALSE_10000",
                              project_model = TRUE, # project models into other sets of variables
                              proj_data_folder = "./data/env_sel/future/", # folder with projection variables
                              #mask = ma_mask, # mask for projecting the models
                              png_partitions = TRUE, # save minimaps in png?
                              write_bin_cut = TRUE, # save binary and cut outputs?
                              dismo_threshold = "spec_sens", # threshold rule for binary outputs
-                             equalize = TRUE, # equalize numbers of presence and pseudoabsences for random forest
+                             equalize = TRUE, # equalize numbers of presence and pseudoabsences for random forest and brt
                              bioclim = TRUE,
                              glm = TRUE,
                              maxent = TRUE,
                              rf = TRUE,
-                             svmk = TRUE)
+                             svmk = TRUE,
+                             brt = TRUE)
                    }
 snow::stopCluster(cl)
 
@@ -114,6 +115,7 @@ for(sp in target_species){
   #combine partitions into one final model per algorithm
   final_model(species_name = sp,
               models_dir = "./outputs/models",
+              #algorithms = c("bioclim", "glm", "maxent", "rf", "svmk", "brt"),
               which_models = c("raw_mean", "bin_consensus"),
               consensus_level = 0.5, # proportion of models in the binary consensus
               png_final = TRUE,
@@ -126,6 +128,7 @@ for(sp in target_species){
 
   #generate ensemble models, combining final models from all algorithms
   ensemble_model(species_name = target_species[i],
+                 #algorithms = c("bioclim", "glm", "maxent", "rf", "svmk", "brt"),
                  occurrences = species_df,
                  models_dir = "./outputs/models",
                  performance_metric = "TSSmax",
