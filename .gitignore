@@ -4,9 +4,12 @@
 .Ruserdata
 *.asc
 data/data_gbif
+data/env_sel.zip
 outputs/*unclean*
 outputs/models
 outputs/models_to_run
+outputs/models.zip
+outputs/tarrasque/
 env/
 env_croped/
 env_sel/
