@@ -10,45 +10,34 @@ library(modleR)
 library(foreach)
 
 # reading species data
-target_species <- read.csv("./data/target_species.csv", stringsAsFactors = FALSE) %>%
-  filter(target_species == 1) %>%
-  pull(species)
+target_species <- read.csv("./data/target_species.csv",
+                           stringsAsFactors = FALSE) %>%
+                  filter(target_species == 1) %>%
+                  pull(species)
 
-clean_df <- read.csv("./outputs/03_clean_df_thin_10.csv", stringsAsFactors = FALSE) %>%
-  filter(species %in% target_species) # retaining only records from target species
+clean_df <- read.csv("./outputs/03_clean_df_thin_10.csv",
+                     stringsAsFactors = FALSE) %>%
+            filter(species %in% target_species) # retaining only records from target species
 
 # converting species names for modleR
 clean_df$species <- gsub(x = clean_df$species, pattern = " ", replacement = "_")
 target_species <- gsub(x = target_species, pattern = " ", replacement = "_")
 
 # reading climatic data
-wc <- list.files("./data/env_sel/present/", pattern = "tif$", full.names = TRUE) %>%
-  stack()
+wc <- list.files("./data/env_sel/present/",
+                 pattern = "tif$", full.names = TRUE) %>%
+      stack()
 
 
 # loops for ENM ----------------------------------------------------------------
 
 # parallelism
-cl = snow::makeCluster(11, outfile = 'outputs/models/out.log')
+cl = snow::makeCluster(50, outfile = '')
 doSNOW::registerDoSNOW(cl)
 
-# creating progress bar
-pb <- progress_bar$new(
-  format = "(:spin) [:bar] :percent :elapsed sp: :current",
-  total = length(target_species), clear = FALSE)
-
-# setting Progress Bar
-progress_number = 1:length(target_species)
-progress = function(n){pb$tick(tokens = list(sp = progress_number[n]))}
-opts <- list(progress =  progress)
-
 # setup data
-#for(sp in target_species){
-#pb$tick()
-temp <-
-  foreach(sp = target_species, .inorder = FALSE,
-          .packages = c("modleR", "progress"),
-          .options.snow = opts) %dopar% {
+foreach(sp = target_species, .inorder = FALSE,
+          .packages = "modleR") %dopar% {
 
             species_df <- clean_df[clean_df$species == sp, ] # getting only occurrences for this species
 
@@ -78,20 +67,16 @@ temp <-
                           boot_proportion = 0.1) # number of partitions in the crossvalidation
           }
 
-snow::stopCluster(cl)
-
 # partitions
-temp <-
-  foreach::foreach(sp = target_species, .inorder = FALSE,
-                   .packages = c("modleR", "progress"),
-                   .options.snow = opts) %dopar% {
+foreach::foreach(sp = target_species, .inorder = FALSE,
+                   .packages = "modleR") %dopar% {
                      # for(sp in target_species){
                      #   pb$tick()
 
                      # run selected algorithms for each partition
                      do_many(species_name = sp,
                              predictors = wc,
-                             models_dir = "./outputs/models_buffertype_NULL_envdist_FALSE_10000",
+                             models_dir = "./outputs/models",
                              project_model = TRUE, # project models into other sets of variables
                              proj_data_folder = "./data/env_sel/future/", # folder with projection variables
                              #mask = ma_mask, # mask for projecting the models
@@ -106,36 +91,37 @@ temp <-
                              svmk = TRUE,
                              brt = TRUE)
                    }
-snow::stopCluster(cl)
 
 # final_models
-for(sp in target_species){
-  pb$tick()
+foreach::foreach(sp = target_species, .inorder = FALSE,
+                 .packages = "modleR") %dopar% {
 
   #combine partitions into one final model per algorithm
   final_model(species_name = sp,
               models_dir = "./outputs/models",
               #algorithms = c("bioclim", "glm", "maxent", "rf", "svmk", "brt"),
               which_models = c("raw_mean", "bin_consensus"),
+              proj_dir = "present", # "ac85bi50" "he85bi50" "mp85bi50"
               consensus_level = 0.5, # proportion of models in the binary consensus
               png_final = TRUE,
               overwrite = TRUE)
 }
 
 # ensemble models
-for(sp in target_species){
-  pb$tick()
+foreach::foreach(sp = target_species, .inorder = FALSE,
+                 .packages = "modleR") %dopar% {
 
   #generate ensemble models, combining final models from all algorithms
   ensemble_model(species_name = target_species[i],
-                 #algorithms = c("bioclim", "glm", "maxent", "rf", "svmk", "brt"),
                  occurrences = species_df,
                  models_dir = "./outputs/models",
                  performance_metric = "TSSmax",
                  which_ensemble = c("weighted_average", "consensus"),
-                 which_final = "raw_mean",
+                 which_final = c("raw_mean", "bin_consensus"),
                  consensus_level = 0.5,
                  png_ensemble = TRUE,
                  uncertainty = TRUE,
                  overwrite = TRUE)
 }
+
+snow::stopCluster(cl)

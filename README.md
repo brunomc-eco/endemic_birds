@@ -145,3 +145,16 @@ This table of records is from the `"./outputs/03_clean_df_thin_10.csv"` file.
 - 10-fold cross-validation for the species with > 50 records
 - Bootstrap (10% of points for training), with 10 repetitions, for the species with <=50 records
 
+## Results
+
+It was not possible to run the BRT algorithm for some species due to the number of records. These species are:
+
+- Amazona brasiliensis
+- Automolus lammi
+- Conopophaga cearae
+- Cotinga maculata
+- Glaucis dohrnii
+- Leptodon forbesi
+- Onychorhynchus swainsoni
+- Phylloscartes beckeri
+- Pyriglena atra
