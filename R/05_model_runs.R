@@ -8,6 +8,7 @@ library(raster)
 library(progress)
 library(modleR)
 library(foreach)
+library(rgeos)
 
 # reading species data
 target_species <- read.csv("./data/target_species.csv",
@@ -28,6 +29,9 @@ wc <- list.files("./data/env_sel/present/",
                  pattern = "tif$", full.names = TRUE) %>%
       stack()
 
+# projections
+crs.wgs84 <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")  # geographical, datum WGS84
+crs.albers <- CRS("+proj=aea +lat_1=-5 +lat_2=-42 +lat_0=-32 +lon_0=-60 +x_0=0 +y_0=0 +ellps=aust_SA +units=m +no_defs") # projected, South America Albers Equal Area Conic
 
 # loops for ENM ----------------------------------------------------------------
 
@@ -40,6 +44,16 @@ foreach(sp = target_species, .inorder = FALSE,
           .packages = "modleR") %dopar% {
 
             species_df <- clean_df[clean_df$species == sp, ] # getting only occurrences for this species
+            # creating model calibration area for this species
+            coords <- species_df[ ,2:3]
+            coordinates(coords) <- c("lon", "lat")
+            proj4string(coords) <- crs.wgs84  # define original projection - wgs84
+            coords <- spTransform(coords, crs.albers)  # project to Albers Equal Area
+            mcp <- gConvexHull(coords) # create minimum convex polygon
+            mcp_buf <- mcp %>%
+              gBuffer(width = gArea(mcp)*2e-07) %>% # draw a buffer of 20% in km around of the minimum convex polygon (Barve et al. 2011)
+              spTransform(crs.wgs84) %>% #convert back into wgs84
+              SpatialPolygonsDataFrame(data = data.frame("val" = 1, row.names = "buffer"))
 
             # choosing the type of partition depending on the number of records
             partition_type <- ifelse(nrow(species_df) > 50, "crossvalidation", "bootstrap")
@@ -47,9 +61,10 @@ foreach(sp = target_species, .inorder = FALSE,
             setup_sdmdata(species_name = sp,
                           occurrences = species_df,
                           predictors = wc, # set of predictors for running the models
-                          models_dir = "./outputs/models_buffertype_NULL_envdist_FALSE_10000", # folder to save partitions
+                          models_dir = "./outputs/models_buffertype_user_envdist_FALSE_10000", # folder to save partitions
                           seed = 123, # set seed for random generation of pseudoabsences
-                          buffer_type = NULL, # buffer type for sampling pseudoabsences
+                          buffer_type = "user", # buffer type for sampling pseudoabsences
+                          buffer_shape = mcp_buf,
 
                           # env_filter = TRUE,
                           # env_distance = "centroid",
